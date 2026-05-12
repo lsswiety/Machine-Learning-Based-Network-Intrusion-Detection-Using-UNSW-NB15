@@ -1,17 +1,14 @@
 # UNSW-NB15 Preprocessing Pipeline — Multiclass Classification
-
 A clean, modular preprocessing pipeline for the **UNSW-NB15 network intrusion detection dataset**, designed for multiclass classification using `attack_cat` as the target label.
 
 ---
 
 ## Project Overview
-
 This project prepares the UNSW-NB15 dataset for machine learning by performing end-to-end preprocessing: deduplication, feature engineering, correlation-based feature selection, scaling, and one-hot encoding — producing a final feature matrix of exactly **194 features** ready for model training.
 
 ---
 
 ## Dataset
-
 **UNSW-NB15** is a network traffic dataset created by the Australian Centre for Cyber Security (ACCS). It contains both normal and attack traffic across 10 categories.
 
 | File | Description |
@@ -22,7 +19,6 @@ This project prepares the UNSW-NB15 dataset for machine learning by performing e
 > Download the dataset from the [official UNSW page](https://research.unsw.edu.au/projects/unsw-nb15-dataset).
 
 ### Attack Categories (Multiclass Target)
-
 `Normal`, `Fuzzers`, `Analysis`, `Backdoors`, `DoS`, `Exploits`, `Generic`, `Reconnaissance`, `Shellcode`, `Worms`
 
 ---
@@ -57,7 +53,8 @@ dur, sbytes, dbytes, sload, dload, spkts, stcpb, dtcpb, smeansz, dmeansz, sjit, 
 
 ### 7. Data Cleaning
 - Fills nulls with train-set mode values
-- Replaces bad placeholder values (e.g. `' '`, `'-'`)
+- Replaces blank placeholder values (e.g. `' '`) with the column mode
+- **Preserves `'-'` in categorical columns** (`proto`, `service`, `state`),  in particular, `service = '-'` is a valid category meaning no application-layer service was detected, and carries real signal for the models
 - Clips binary columns (`is_sm_ips_ports`, `is_ftp_login`, `ct_flw_http_mthd`) to `{0, 1}`
 - Coerces numeric columns mistakenly read as object
 
@@ -65,7 +62,7 @@ dur, sbytes, dbytes, sload, dload, spkts, stcpb, dtcpb, smeansz, dmeansz, sjit, 
 - **StandardScaler** fitted on 32 numerical columns
 - **OneHotEncoder** with fixed category lists to guarantee reproducible output:
   - `proto` → 133 categories
-  - `service` → 13 categories
+  - `service` → 13 categories (includes `'-'` as a valid category)
   - `state` → 16 categories
 
 ### 9. Final Feature Matrix
@@ -81,7 +78,6 @@ dur, sbytes, dbytes, sload, dload, spkts, stcpb, dtcpb, smeansz, dmeansz, sjit, 
 ---
 
 ## Exploratory Data Analysis (EDA)
-
 Included visualizations:
 - **Class distribution** bar charts for train and test sets
 - **Correlation heatmap** of selected numerical features
@@ -89,7 +85,6 @@ Included visualizations:
 ---
 
 ## Output Artifacts
-
 After running the pipeline, the following files are saved:
 
 | File | Description |
@@ -97,4 +92,4 @@ After running the pipeline, the following files are saved:
 | `final_train.pkl` | Preprocessed X_train + y_train (pickle) |
 | `final_test.pkl` | Preprocessed X_test + y_test (pickle) |
 | `train_preprocessed.csv` | Preprocessed training set (CSV) |
-| `test_preprocessed.csv` | Preprocessed testing set (CSV) |
+| `test_preprocessed.csv` | Preprocessed testing set (CSV) |  
