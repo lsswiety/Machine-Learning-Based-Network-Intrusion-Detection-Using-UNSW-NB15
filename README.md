@@ -39,14 +39,12 @@ Extracts `attack_cat` as the multiclass target, strips whitespace, and applies `
 
 ### 5. Drop Correlated Features
 Drops 8 highly correlated features (threshold > 0.95) identified during EDA:
-
 ```
 sloss, dloss, dpkts, dwin, ltime, ct_srv_dst, ct_src_dport_ltm, ct_dst_src_ltm
 ```
 
 ### 6. Log1p Transform
 Applies `log1p` to 12 skewed numerical columns to reduce the effect of outliers:
-
 ```
 dur, sbytes, dbytes, sload, dload, spkts, stcpb, dtcpb, smeansz, dmeansz, sjit, djit
 ```
@@ -54,19 +52,18 @@ dur, sbytes, dbytes, sload, dload, spkts, stcpb, dtcpb, smeansz, dmeansz, sjit, 
 ### 7. Data Cleaning
 - Fills nulls with train-set mode values
 - Replaces blank placeholder values (e.g. `' '`) with the column mode
-- **Preserves `'-'` in categorical columns** (`proto`, `service`, `state`),  in particular, `service = '-'` is a valid category meaning no application-layer service was detected, and carries real signal for the models
+- **Preserves `'-'` in categorical columns** (`proto`, `service`, `state`), in particular, `service = '-'` is a valid category meaning no application-layer service was detected, and carries real signal for the models
 - Clips binary columns (`is_sm_ips_ports`, `is_ftp_login`, `ct_flw_http_mthd`) to `{0, 1}`
 - Coerces numeric columns mistakenly read as object
 
 ### 8. Scaling & One-Hot Encoding
-- **StandardScaler** fitted on 32 numerical columns
+- **MinMaxScaler** fitted on 32 numerical columns (scales all values to the `[0, 1]` range)
 - **OneHotEncoder** with fixed category lists to guarantee reproducible output:
   - `proto` → 133 categories
   - `service` → 13 categories (includes `'-'` as a valid category)
   - `state` → 16 categories
 
 ### 9. Final Feature Matrix
-
 | Component | Count |
 |-----------|-------|
 | Numerical features (scaled) | 32 |
@@ -92,4 +89,4 @@ After running the pipeline, the following files are saved:
 | `final_train.pkl` | Preprocessed X_train + y_train (pickle) |
 | `final_test.pkl` | Preprocessed X_test + y_test (pickle) |
 | `train_preprocessed.csv` | Preprocessed training set (CSV) |
-| `test_preprocessed.csv` | Preprocessed testing set (CSV) |  
+| `test_preprocessed.csv` | Preprocessed testing set (CSV) |
