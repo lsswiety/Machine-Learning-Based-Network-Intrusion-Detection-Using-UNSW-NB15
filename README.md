@@ -179,8 +179,8 @@ XGBClassifier(
 
 ### Feature Selection Impact
 
-- **MI was the best filter method** — XGBoost with MI: 75.50% vs 68.88% with Chi2
-- **RFE was the best wrapper method** — Random Forest with RFE: F1 0.7287 vs 0.6958 with SFS
+- **MI was the best filter method** XGBoost with MI: 75.50% vs 68.88% with Chi2
+- **RFE was the best wrapper method**  Random Forest with RFE: F1 0.7287 vs 0.6958 with SFS
 - **Chi2 consistently hurt UNSW-NB15 models** by selecting OHE protocol/service columns over informative continuous features
 - **Naïve Bayes benefited most** from feature selection: 16.12% → 46.62% with MI
 
@@ -261,7 +261,7 @@ Included visualisations:
 | Before tuning | Decision Tree: 79.89% acc, Macro F1: 0.6289 | XGBoost: 75.38% acc, Macro F1: 0.5405 |
 | After tuning | SVM: 76.76% acc, Weighted F1: 0.7313 | XGBoost: 75.58% acc, Weighted F1: 0.7820 |
 
-NSL-KDD consistently produced higher Macro F1 scores because it has only 5 classes with clearer attack boundaries. UNSW-NB15's 10-class problem with extreme imbalance makes classification harder — high accuracy masks complete failure on rare but critical attack types.
+NSL-KDD consistently produced higher Macro F1 scores because it has only 5 classes with clearer attack boundaries. UNSW-NB15's 10-class problem with extreme imbalance makes classification harder high accuracy masks complete failure on rare but critical attack types.
 
 ### Per-Class Weaknesses (UNSW-NB15)
 
