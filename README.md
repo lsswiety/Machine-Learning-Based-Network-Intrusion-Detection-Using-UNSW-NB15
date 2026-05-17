@@ -43,7 +43,7 @@ A companion analysis also benchmarks results against the **NSL-KDD dataset** to 
 
 `Normal`, `Fuzzers`, `Analysis`, `Backdoors`, `DoS`, `Exploits`, `Generic`, `Reconnaissance`, `Shellcode`, `Worms`
 
-> **Class imbalance note:** Normal accounts for ~61% of test samples. Worms has only 44 test samples. This makes accuracy misleading — a model can reach 75% accuracy while completely failing on rare but critical attack types.
+> **Class imbalance challenge:** The dataset is imbalanced, where Normal traffic makes up about 61% of the test data while Worms contains only 44 samples. The goal was to handle this imbalance and evaluate its effect on detecting minority attack classes. Because of this, accuracy alone can be misleading, as a model may achieve high accuracy while failing to detect rare but important attacks.
 
 ---
 
@@ -51,7 +51,7 @@ A companion analysis also benchmarks results against the **NSL-KDD dataset** to 
 
 ### 1. Load Data
 
-Reads `UNSW_NB15_training-set.csv` and `UNSW_NB15_testing-set.csv` into pandas DataFrames. Column alignment is enforced — only columns present in both splits are kept, preventing train/test mismatch downstream.
+Reads `UNSW_NB15_training-set.csv` and `UNSW_NB15_testing-set.csv` into pandas DataFrames. Column alignment is enforced only columns present in both splits are kept, preventing train/test mismatch downstream.
 
 ### 2. Drop ID & Address Columns
 
@@ -63,7 +63,7 @@ Removes exact duplicate rows from both train and test sets independently.
 
 ### 4. Label Engineering
 
-Extracts `attack_cat` as the multiclass target, strips whitespace, and applies `LabelEncoder` fitted on train only — never on test data.
+Extracts `attack_cat` as the multiclass target, strips whitespace, and applies `LabelEncoder` fitted on train only never on test data.
 
 ### 5. Drop Correlated Features
 
@@ -116,10 +116,10 @@ All feature selectors are fitted **exclusively on the training set** to prevent 
 | Feature Set | Method | Key Detail |
 |-------------|--------|------------|
 | All Features | Baseline | All 194 features; serves as the performance ceiling |
-| MI k=20 | Filter — Mutual Information | `SelectKBest(mutual_info_classif, k=20)`; correctly prioritises continuous traffic features (duration, sbytes, dbytes, rate) |
-| Chi2 k=20 | Filter — Chi-Square | `SelectKBest(chi2, k=20)`; requires non-negative input, so features are clipped to `[0, ∞)` before scoring; tends to select OHE protocol/service columns |
-| RFE k=20 | Wrapper — RFE | `RFE(LinearSVC(C=1), n_features_to_select=20, step=0.3)`; step=0.3 eliminates 30% of features per round for speed |
-| SFS k=20 | Wrapper — SFS | `SequentialFeatureSelector(RandomForestClassifier(n_estimators=20, max_depth=8), cv=2, direction='forward')`; 1,405s vs 59.5s for RFE |
+| MI k=20 | Filter Mutual Information | `SelectKBest(mutual_info_classif, k=20)`; correctly prioritises continuous traffic features (duration, sbytes, dbytes, rate) |
+| Chi2 k=20 | Filter Chi-Square | `SelectKBest(chi2, k=20)`; requires non-negative input, so features are clipped to `[0, ∞)` before scoring; tends to select OHE protocol/service columns |
+| RFE k=20 | Wrapper RFE | `RFE(LinearSVC(C=1), n_features_to_select=20, step=0.3)`; step=0.3 eliminates 30% of features per round for speed |
+| SFS k=20 | Wrapper SFS | `SequentialFeatureSelector(RandomForestClassifier(n_estimators=20, max_depth=8), cv=2, direction='forward')`; 1,405s vs 59.5s for RFE |
 
 ### Feature Overlap Analysis
 
@@ -285,7 +285,7 @@ Even the best tuned XGBoost model shows severe gaps on rare classes:
 | RFE feature selection | ~59.5s |
 | XGBoost grid search (216 fits) | ~1,102s |
 
-**Recommended production combination:** MI feature selection + XGBoost or Decision Tree — strong accuracy, interpretable behaviour, manageable training time.
+**Recommended production combination:** MI feature selection + XGBoost or Decision Tree strong accuracy, interpretable behaviour, manageable training time.
 
 ---
 
